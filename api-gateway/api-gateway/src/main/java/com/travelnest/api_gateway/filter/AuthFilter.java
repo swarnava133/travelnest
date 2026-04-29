@@ -5,13 +5,21 @@ import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFac
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import java.util.List;
 
 @Component
-public class AuthFilter  extends
-        AbstractGatewayFilterFactory<AuthFilter.Config>  {
+public class AuthFilter extends
+        AbstractGatewayFilterFactory<AuthFilter.Config> {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    // ✅ These routes are PUBLIC — no JWT needed
+    private static final List<String> OPEN_ROUTES = List.of(
+            "/api/users/register",
+            "/api/users/login",
+            "/api/users/health"
+    );
 
     public AuthFilter() {
         super(Config.class);
@@ -21,38 +29,40 @@ public class AuthFilter  extends
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
 
-            // 1️⃣ Get the request
-            var request = exchange.getRequest();
+            String path = exchange.getRequest().getURI().getPath();
 
-            // 2️⃣ Check if Authorization header exists
-            if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
-                // No token → block request → return 401 Unauthorized
+            // 1️⃣ Check if this route is public — skip JWT check
+            boolean isOpenRoute = OPEN_ROUTES.stream()
+                    .anyMatch(path::startsWith);
+
+            if (isOpenRoute) {
+                // Public route → forward directly without checking token
+                return chain.filter(exchange);
+            }
+
+            // 2️⃣ For protected routes — check Authorization header
+            if (!exchange.getRequest().getHeaders()
+                    .containsKey(HttpHeaders.AUTHORIZATION)) {
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                 return exchange.getResponse().setComplete();
             }
 
-            // 3️⃣ Extract the token from header
-            // Header looks like: "Bearer eyJhbGci..."
-            // We remove "Bearer " to get just the token
-            String authHeader = request.getHeaders()
-                    .get(HttpHeaders.AUTHORIZATION)
-                    .get(0);
+            // 3️⃣ Extract token from header
+            String authHeader = exchange.getRequest().getHeaders()
+                    .get(HttpHeaders.AUTHORIZATION).get(0);
             String token = authHeader.substring(7); // remove "Bearer "
 
-            // 4️⃣ Validate the token
+            // 4️⃣ Validate token
             if (!jwtUtil.isTokenValid(token)) {
-                // Invalid/expired token → block → return 401
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                 return exchange.getResponse().setComplete();
             }
 
-            // 5️⃣ Token is valid → forward request to correct service
+            // 5️⃣ Valid token → forward request
             return chain.filter(exchange);
         };
     }
 
-    // Required config class — can be empty for now
     public static class Config {
     }
-
 }
