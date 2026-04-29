@@ -1,6 +1,7 @@
 package com.travelnest.hotel_service.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,6 +38,7 @@ public class Room {
     // Many rooms belong to ONE hotel
     // @ManyToOne = opposite of @OneToMany in Hotel.java
     // @JoinColumn = foreign key column name in rooms table
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id", nullable = false)
     private Hotel hotel;

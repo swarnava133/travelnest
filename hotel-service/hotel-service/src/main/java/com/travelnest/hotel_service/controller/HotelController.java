@@ -4,6 +4,7 @@ import com.travelnest.hotel_service.dto.HotelRequest;
 import com.travelnest.hotel_service.dto.RoomRequest;
 import com.travelnest.hotel_service.model.Hotel;
 import com.travelnest.hotel_service.model.Room;
+import com.travelnest.hotel_service.repository.RoomRepository;
 import com.travelnest.hotel_service.service.HotelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,8 @@ import java.util.List;
 public class HotelController {
 
     private final HotelService hotelService;
+
+    private final RoomRepository roomRepository;
 
     // GET all hotels
     // http://localhost:8080/api/hotels
@@ -79,5 +82,15 @@ public class HotelController {
         return ResponseEntity.ok(
                 hotelService.updateRoomAvailability(roomId, available)
         );
+    }
+
+    // GET room by id — called by booking-service via Feign
+// http://localhost:8082/api/hotels/rooms/1
+    @GetMapping("/rooms/{roomId}")
+    public ResponseEntity<Room> getRoomById(@PathVariable Long roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() ->
+                        new RuntimeException("Room not found: " + roomId));
+        return ResponseEntity.ok(room);
     }
 }

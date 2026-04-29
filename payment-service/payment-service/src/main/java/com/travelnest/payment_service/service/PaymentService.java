@@ -23,10 +23,21 @@ public class PaymentService {
 
         // Create payment record
         Payment payment = new Payment();
-        payment.setBookingId(request.getBookingId());
+       // **payment.setBookingId(request.getBookingId());
         payment.setUserEmail(request.getUserEmail());
         payment.setAmount(request.getAmount());
-        payment.setPaymentMethod(request.getPaymentMethod());
+
+        //**change
+        payment.setBookingId(0L);   // temporary default
+        payment.setUserEmail(request.getUserEmail());
+        payment.setAmount(request.getAmount());
+        payment.setPaymentMethod(
+                request.getPaymentMethod() != null ?
+                        request.getPaymentMethod() : "ONLINE"   // default if not provided
+        );
+
+
+       //** payment.setPaymentMethod(request.getPaymentMethod());
         payment.setPaymentDate(LocalDateTime.now());
 
         // Generate unique transaction ID
