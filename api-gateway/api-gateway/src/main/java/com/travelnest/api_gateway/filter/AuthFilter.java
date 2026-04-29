@@ -18,7 +18,8 @@ public class AuthFilter extends
     private static final List<String> OPEN_ROUTES = List.of(
             "/api/users/register",
             "/api/users/login",
-            "/api/users/health"
+            "/api/users/health",
+            "/api/hotels/health"
     );
 
     public AuthFilter() {
