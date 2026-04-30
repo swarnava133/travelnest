@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TravelNest — Find Your Perfect Stay</title>
+    <title>TravelNest — Luxury Hotel Booking</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -16,56 +16,114 @@
 
 <!-- HERO SECTION -->
 <section class="hero">
-    <h1>🏨 Find Your Perfect Stay</h1>
-    <p>Book hotels across India at the best prices</p>
+    <div class="hero-content">
+        <h1>Discover <span>Luxury</span> Hotels</h1>
+        <p>Book premium stays across India's finest destinations</p>
 
-    <!-- SEARCH BOX -->
-    <div class="search-box">
-        <input
-                type="text"
-                id="search-city"
-                placeholder="Enter city (e.g. Kolkata)"
-        />
-        <button class="btn btn-primary" onclick="searchHotels()">
-            🔍 Search Hotels
-        </button>
+        <div class="search-box">
+            <input
+                    type="text"
+                    id="search-city"
+                    placeholder="🔍 Search by city..."
+            />
+            <button class="btn btn-primary" onclick="searchHotels()">
+                Search Hotels
+            </button>
+        </div>
     </div>
 </section>
 
-<!-- FEATURED HOTELS -->
-<section class="section">
+<!-- STATS SECTION -->
+<section class="stats-section">
+    <div class="stats-grid">
+        <div class="stat-item">
+            <h3>50+</h3>
+            <p>Luxury Hotels</p>
+        </div>
+        <div class="stat-item">
+            <h3>10+</h3>
+            <p>Cities</p>
+        </div>
+        <div class="stat-item">
+            <h3>5★</h3>
+            <p>Average Rating</p>
+        </div>
+        <div class="stat-item">
+            <h3>24/7</h3>
+            <p>Support</p>
+        </div>
+    </div>
+</section>
+
+<!-- CITY FILTER TABS -->
+<div class="section" style="padding-bottom:0">
     <h2 class="section-title">Featured Hotels</h2>
-    <div id="hotels-container" class="hotels-grid">
-        <div class="spinner">Loading hotels...</div>
-    </div>
-</section>
+</div>
+
+<div class="city-tabs">
+    <button class="city-tab active" onclick="filterCity('all', this)">
+        All Cities
+    </button>
+    <button class="city-tab" onclick="filterCity('Kolkata', this)">
+        Kolkata
+    </button>
+    <button class="city-tab" onclick="filterCity('Mumbai', this)">
+        Mumbai
+    </button>
+    <button class="city-tab" onclick="filterCity('Delhi', this)">
+        Delhi
+    </button>
+    <button class="city-tab" onclick="filterCity('Chennai', this)">
+        Chennai
+    </button>
+    <button class="city-tab" onclick="filterCity('Hyderabad', this)">
+        Hyderabad
+    </button>
+</div>
+
+<!-- HOTELS GRID -->
+<div id="hotels-container" class="hotels-grid">
+    <div class="spinner">✨ Loading luxury hotels...</div>
+</div>
 
 <!-- FOOTER -->
 <footer>
-    <p>© 2026 TravelNest. Built with Spring Boot Microservices.</p>
+    <p>© 2026 <span>TravelNest</span> — Built with Spring Boot Microservices</p>
 </footer>
 
 <script src="js/auth.js"></script>
 <script src="js/api.js"></script>
 <script>
-    // Update navbar on page load
     updateNavbar();
 
-    // Load all hotels on page load
+    let allHotels = [];
+
+    // Load all hotels
     async function loadHotels() {
         try {
-            // If not logged in → show login message
             if (!isLoggedIn()) {
                 document.getElementById("hotels-container").innerHTML = `
-                    <div class="alert alert-error">
-                        Please <a href="login.html">login</a> to see hotels.
+                    <div style="grid-column:1/-1; text-align:center; padding:60px">
+                        <h2 style="color:var(--primary); margin-bottom:20px">
+                            Welcome to TravelNest 🏨
+                        </h2>
+                        <p style="color:#666; margin-bottom:30px; font-size:18px">
+                            Please login to explore our luxury hotels
+                        </p>
+                        <a href="login.html" class="btn btn-primary">
+                            Login to Continue
+                        </a>
+                        &nbsp;&nbsp;
+                        <a href="register.html" class="btn btn-success">
+                            Create Account
+                        </a>
                     </div>
                 `;
                 return;
             }
 
-            const hotels = await HotelAPI.getAllHotels();
-            displayHotels(hotels);
+            allHotels = await HotelAPI.getAllHotels();
+            displayHotels(allHotels);
         } catch (error) {
             document.getElementById("hotels-container").innerHTML = `
                 <div class="alert alert-error">Failed to load hotels!</div>
@@ -73,16 +131,40 @@
         }
     }
 
-    // Search hotels by city
-    async function searchHotels() {
-        const city = document.getElementById("search-city").value.trim();
-        if (!city) {
-            loadHotels();
-            return;
-        }
+    // Filter hotels by city
+    async function filterCity(city, btn) {
+        // Update active tab
+        document.querySelectorAll('.city-tab').forEach(t =>
+            t.classList.remove('active')
+        );
+        btn.classList.add('active');
 
         if (!isLoggedIn()) {
             window.location.href = "login.html";
+            return;
+        }
+
+        if (city === 'all') {
+            displayHotels(allHotels);
+        } else {
+            const filtered = allHotels.filter(h =>
+                h.city.toLowerCase() === city.toLowerCase()
+            );
+            displayHotels(filtered);
+        }
+    }
+
+    // Search hotels by city
+    async function searchHotels() {
+        const city = document.getElementById("search-city").value.trim();
+
+        if (!isLoggedIn()) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        if (!city) {
+            displayHotels(allHotels);
             return;
         }
 
@@ -106,28 +188,42 @@
 
         if (!hotels || hotels.length === 0) {
             container.innerHTML = `
-                <div class="alert alert-error">No hotels found!</div>
+                <div style="grid-column:1/-1; text-align:center; padding:40px">
+                    <p style="font-size:18px; color:#666">
+                        No hotels found in this city.
+                    </p>
+                </div>
             `;
             return;
         }
 
         container.innerHTML = hotels.map(hotel => `
             <div class="hotel-card"
-                 onclick="window.location.href='hotel-detail.html?id=${hotel.id}'">
-                <img src="${hotel.imageUrl || 'https://via.placeholder.com/300x200?text=Hotel'}"
-                     alt="${hotel.name}"
-                     onerror="this.src='https://via.placeholder.com/300x200?text=Hotel'">
+                 onclick="window.location.href=
+                 'hotel-detail.html?id=${hotel.id}'">
+                <div style="overflow:hidden; height:210px">
+                    <img src="${hotel.imageUrl ||
+                        'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800'}"
+                         alt="${hotel.name}"
+                         style="width:100%; height:210px; object-fit:cover"
+                         onerror="this.src=
+                         'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800'">
+                </div>
                 <div class="hotel-card-body">
                     <h3>${hotel.name}</h3>
                     <p class="city">📍 ${hotel.city}</p>
-                    <p>${hotel.description}</p>
-                    <p class="rating">⭐ ${hotel.rating}/5</p>
+                    <p class="description">${hotel.description}</p>
+                    <p class="rating">⭐ ${hotel.rating} / 5.0</p>
                 </div>
             </div>
         `).join("");
     }
 
-    // Load hotels when page loads
+    // Allow Enter key for search
+    document.getElementById("search-city").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") searchHotels();
+    });
+
     loadHotels();
 </script>
 
