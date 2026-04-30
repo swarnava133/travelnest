@@ -31,7 +31,7 @@ public class HotelService {
 
     // ✅ Search hotels by city
     public List<Hotel> getHotelsByCity(String city) {
-        return hotelRepository.findByCity(city);
+        return hotelRepository.findByCityIgnoreCase(city);
     }
 
     // ✅ Add new hotel

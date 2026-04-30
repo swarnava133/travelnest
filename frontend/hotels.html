@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hotels — TravelNest</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="index.html" class="logo">Travel<span>Nest</span></a>
+    <div id="nav-links"></div>
+</nav>
+
+<section class="section">
+    <h2 class="section-title">All Hotels</h2>
+
+    <!-- Search Bar -->
+    <div style="margin-bottom:30px">
+        <input type="text" id="search-city"
+               placeholder="Search by city..."
+               style="padding:12px; width:300px; border:2px solid #e0e0e0;
+                      border-radius:8px; font-size:15px; outline:none"/>
+        <button class="btn btn-primary" onclick="searchHotels()">
+            🔍 Search
+        </button>
+        <button class="btn" style="background:#grey"
+                onclick="loadAllHotels()">
+            Show All
+        </button>
+    </div>
+
+    <div id="hotels-container" class="hotels-grid">
+        <div class="spinner">Loading hotels...</div>
+    </div>
+</section>
+
+<footer>
+    <p>© 2026 TravelNest. Built with Spring Boot Microservices.</p>
+</footer>
+
+<script src="js/auth.js"></script>
+<script src="js/api.js"></script>
+<script>
+    requireAuth();
+    updateNavbar();
+
+    async function loadAllHotels() {
+        document.getElementById("hotels-container").innerHTML =
+            `<div class="spinner">Loading...</div>`;
+        try {
+            const hotels = await HotelAPI.getAllHotels();
+            displayHotels(hotels);
+        } catch (e) {
+            document.getElementById("hotels-container").innerHTML =
+                `<div class="alert alert-error">Failed to load!</div>`;
+        }
+    }
+
+    async function searchHotels() {
+        const city = document.getElementById("search-city").value.trim();
+        if (!city) { loadAllHotels(); return; }
+
+        document.getElementById("hotels-container").innerHTML =
+            `<div class="spinner">Searching...</div>`;
+        try {
+            const hotels = await HotelAPI.getHotelsByCity(city);
+            displayHotels(hotels);
+        } catch (e) {
+            document.getElementById("hotels-container").innerHTML =
+                `<div class="alert alert-error">Search failed!</div>`;
+        }
+    }
+
+    function displayHotels(hotels) {
+        const container = document.getElementById("hotels-container");
+        if (!hotels || hotels.length === 0) {
+            container.innerHTML =
+                `<div class="alert alert-error">No hotels found!</div>`;
+            return;
+        }
+        container.innerHTML = hotels.map(hotel => `
+            <div class="hotel-card"
+                 onclick="window.location.href=
+                 'hotel-detail.html?id=${hotel.id}'">
+                <img src="${hotel.imageUrl ||
+                    'https://via.placeholder.com/300x200?text=Hotel'}"
+                     alt="${hotel.name}"
+                     onerror="this.src=
+                     'https://via.placeholder.com/300x200?text=Hotel'">
+                <div class="hotel-card-body">
+                    <h3>${hotel.name}</h3>
+                    <p class="city">📍 ${hotel.city}</p>
+                    <p>${hotel.description}</p>
+                    <p class="rating">⭐ ${hotel.rating}/5</p>
+                </div>
+            </div>
+        `).join("");
+    }
+
+    loadAllHotels();
+</script>
+</body>
+</html>

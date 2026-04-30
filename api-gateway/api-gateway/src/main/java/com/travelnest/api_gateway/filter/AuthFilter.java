@@ -30,6 +30,22 @@ public class AuthFilter extends
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
 
+            // ✅ Handle CORS preflight requests
+            if (exchange.getRequest().getMethod().toString().equals("OPTIONS")) {
+                exchange.getResponse().getHeaders()
+                        .add("Access-Control-Allow-Origin", "*");
+                exchange.getResponse().getHeaders()
+                        .add("Access-Control-Allow-Methods",
+                                "GET, POST, PUT, DELETE, OPTIONS");
+                exchange.getResponse().getHeaders()
+                        .add("Access-Control-Allow-Headers", "*");
+                exchange.getResponse().setStatusCode(HttpStatus.OK);
+                return exchange.getResponse().setComplete();
+            }
+
+
+
+
             String path = exchange.getRequest().getURI().getPath();
 
             // 1️⃣ Check if this route is public — skip JWT check

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Bookings — TravelNest</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="index.html" class="logo">Travel<span>Nest</span></a>
+    <div id="nav-links"></div>
+</nav>
+
+<!-- DASHBOARD -->
+<div class="section">
+    <h2 class="section-title">📋 My Bookings</h2>
+
+    <div id="alert-box"></div>
+    <div id="bookings-container">
+        <div class="spinner">Loading your bookings...</div>
+    </div>
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/api.js"></script>
+<script>
+    requireAuth();
+    updateNavbar();
+
+    // Load user bookings
+    async function loadBookings() {
+        try {
+            const email = getUserEmail();
+            const bookings = await BookingAPI.getUserBookings(email);
+            const container = document.getElementById("bookings-container");
+
+            if (!bookings || bookings.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-error">
+                        No bookings yet!
+                        <a href="index.html">Book a hotel</a>
+                    </div>
+                `;
+                return;
+            }
+
+            // Show newest bookings first
+            bookings.reverse();
+
+            container.innerHTML = bookings.map(booking => `
+                <div class="booking-card">
+                    <div class="booking-info">
+                        <h3>🏨 ${booking.hotelName}</h3>
+                        <p>🛏️ Room: ${booking.roomNumber}</p>
+                        <p>📅 Check-in: ${booking.checkInDate}</p>
+                        <p>📅 Check-out: ${booking.checkOutDate}</p>
+                        <p>👥 Guests: ${booking.numberOfGuests}</p>
+                        <p>💰 Total: ₹${booking.totalAmount}</p>
+                    </div>
+                    <div style="text-align:center">
+                        <span class="status-badge status-${booking.status.toLowerCase()}">
+                            ${booking.status}
+                        </span>
+                        ${booking.status === "CONFIRMED" ? `
+                            <br><br>
+                            <button class="btn btn-danger"
+                                    onclick="cancelBooking(${booking.id})">
+                                Cancel
+                            </button>
+                        ` : ""}
+                    </div>
+                </div>
+            `).join("");
+
+        } catch (error) {
+            document.getElementById("bookings-container").innerHTML = `
+                <div class="alert alert-error">Failed to load bookings!</div>
+            `;
+        }
+    }
+
+    // Cancel booking
+    async function cancelBooking(bookingId) {
+        if (!confirm("Are you sure you want to cancel this booking?")) return;
+
+        try {
+            const result = await BookingAPI.cancelBooking(bookingId);
+            if (result.status === "CANCELLED") {
+                document.getElementById("alert-box").innerHTML = `
+                    <div class="alert alert-success">
+                        Booking cancelled successfully!
+                    </div>
+                `;
+                loadBookings(); // Reload bookings
+            }
+        } catch (error) {
+            document.getElementById("alert-box").innerHTML = `
+                <div class="alert alert-error">Cancellation failed!</div>
+            `;
+        }
+    }
+
+    loadBookings();
+</script>
+
+</body>
+</html>

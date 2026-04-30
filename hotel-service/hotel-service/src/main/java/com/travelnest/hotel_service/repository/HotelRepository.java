@@ -10,7 +10,8 @@ public interface HotelRepository extends JpaRepository<Hotel, Long> {
 
     // Find all hotels in a city
     // SQL: SELECT * FROM hotels WHERE city = ?
-    List<Hotel> findByCity(String city);
+    // Case insensitive city search
+    List<Hotel> findByCityIgnoreCase(String city);
 
     // Find hotels by city and rating greater than given value
     // SQL: SELECT * FROM hotels WHERE city = ? AND rating >= ?

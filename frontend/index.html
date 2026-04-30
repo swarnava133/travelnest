@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelNest — Find Your Perfect Stay</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="index.html" class="logo">Travel<span>Nest</span></a>
+    <div id="nav-links"></div>
+</nav>
+
+<!-- HERO SECTION -->
+<section class="hero">
+    <h1>🏨 Find Your Perfect Stay</h1>
+    <p>Book hotels across India at the best prices</p>
+
+    <!-- SEARCH BOX -->
+    <div class="search-box">
+        <input
+                type="text"
+                id="search-city"
+                placeholder="Enter city (e.g. Kolkata)"
+        />
+        <button class="btn btn-primary" onclick="searchHotels()">
+            🔍 Search Hotels
+        </button>
+    </div>
+</section>
+
+<!-- FEATURED HOTELS -->
+<section class="section">
+    <h2 class="section-title">Featured Hotels</h2>
+    <div id="hotels-container" class="hotels-grid">
+        <div class="spinner">Loading hotels...</div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p>© 2026 TravelNest. Built with Spring Boot Microservices.</p>
+</footer>
+
+<script src="js/auth.js"></script>
+<script src="js/api.js"></script>
+<script>
+    // Update navbar on page load
+    updateNavbar();
+
+    // Load all hotels on page load
+    async function loadHotels() {
+        try {
+            // If not logged in → show login message
+            if (!isLoggedIn()) {
+                document.getElementById("hotels-container").innerHTML = `
+                    <div class="alert alert-error">
+                        Please <a href="login.html">login</a> to see hotels.
+                    </div>
+                `;
+                return;
+            }
+
+            const hotels = await HotelAPI.getAllHotels();
+            displayHotels(hotels);
+        } catch (error) {
+            document.getElementById("hotels-container").innerHTML = `
+                <div class="alert alert-error">Failed to load hotels!</div>
+            `;
+        }
+    }
+
+    // Search hotels by city
+    async function searchHotels() {
+        const city = document.getElementById("search-city").value.trim();
+        if (!city) {
+            loadHotels();
+            return;
+        }
+
+        if (!isLoggedIn()) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        document.getElementById("hotels-container").innerHTML = `
+            <div class="spinner">Searching...</div>
+        `;
+
+        try {
+            const hotels = await HotelAPI.getHotelsByCity(city);
+            displayHotels(hotels);
+        } catch (error) {
+            document.getElementById("hotels-container").innerHTML = `
+                <div class="alert alert-error">Search failed!</div>
+            `;
+        }
+    }
+
+    // Display hotels as cards
+    function displayHotels(hotels) {
+        const container = document.getElementById("hotels-container");
+
+        if (!hotels || hotels.length === 0) {
+            container.innerHTML = `
+                <div class="alert alert-error">No hotels found!</div>
+            `;
+            return;
+        }
+
+        container.innerHTML = hotels.map(hotel => `
+            <div class="hotel-card"
+                 onclick="window.location.href='hotel-detail.html?id=${hotel.id}'">
+                <img src="${hotel.imageUrl || 'https://via.placeholder.com/300x200?text=Hotel'}"
+                     alt="${hotel.name}"
+                     onerror="this.src='https://via.placeholder.com/300x200?text=Hotel'">
+                <div class="hotel-card-body">
+                    <h3>${hotel.name}</h3>
+                    <p class="city">📍 ${hotel.city}</p>
+                    <p>${hotel.description}</p>
+                    <p class="rating">⭐ ${hotel.rating}/5</p>
+                </div>
+            </div>
+        `).join("");
+    }
+
+    // Load hotels when page loads
+    loadHotels();
+</script>
+
+</body>
+</html>
