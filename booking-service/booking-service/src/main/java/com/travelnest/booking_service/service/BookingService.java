@@ -22,7 +22,7 @@ public class BookingService {
     private final PaymentClient paymentClient;
     private final BookingEventProducer bookingEventProducer;
 
-    // 🏨 CREATE BOOKING — main flow
+    //  CREATE BOOKING — main flow
     public Booking createBooking(BookingRequest request) {
 
         // Step 1 — Get room details from Hotel Service via Feign

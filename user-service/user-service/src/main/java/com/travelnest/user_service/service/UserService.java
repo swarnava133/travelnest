@@ -18,7 +18,7 @@ public class UserService {
     private final JwtService jwtService;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    // 📝 REGISTER
+    //  REGISTER
     public String register(RegisterRequest request) {
 
         // Check if email already exists
@@ -41,7 +41,7 @@ public class UserService {
         return "User registered successfully!";
     }
 
-    // 🔐 LOGIN
+    //  LOGIN
     public AuthResponse login(LoginRequest request) {
 
         // Find user by email

@@ -17,24 +17,24 @@ public class HotelService {
     private final HotelRepository hotelRepository;
     private final RoomRepository roomRepository;
 
-    // ✅ Get all hotels
+    //  Get all hotels
     public List<Hotel> getAllHotels() {
         return hotelRepository.findAll();
     }
 
-    // ✅ Get hotel by id
+    //  Get hotel by id
     public Hotel getHotelById(Long id) {
         return hotelRepository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException("Hotel not found with id: " + id));
     }
 
-    // ✅ Search hotels by city
+    //  Search hotels by city
     public List<Hotel> getHotelsByCity(String city) {
         return hotelRepository.findByCityIgnoreCase(city);
     }
 
-    // ✅ Add new hotel
+    //  Add new hotel
     public Hotel addHotel(HotelRequest request) {
         Hotel hotel = new Hotel();
         hotel.setName(request.getName());
@@ -46,17 +46,17 @@ public class HotelService {
         return hotelRepository.save(hotel);
     }
 
-    // ✅ Get all rooms of a hotel
+    //  Get all rooms of a hotel
     public List<Room> getRoomsByHotel(Long hotelId) {
         return roomRepository.findByHotelId(hotelId);
     }
 
-    // ✅ Get available rooms of a hotel
+    //  Get available rooms of a hotel
     public List<Room> getAvailableRooms(Long hotelId) {
         return roomRepository.findByHotelIdAndIsAvailable(hotelId, true);
     }
 
-    // ✅ Add room to hotel
+    //  Add room to hotel
     public Room addRoom(Long hotelId, RoomRequest request) {
 
         // First find the hotel
@@ -75,7 +75,7 @@ public class HotelService {
         return roomRepository.save(room);
     }
 
-    // ✅ Update room availability
+    //  Update room availability
     // Called by booking-service when room is booked or cancelled
     public Room updateRoomAvailability(Long roomId, Boolean isAvailable) {
         Room room = roomRepository.findById(roomId)

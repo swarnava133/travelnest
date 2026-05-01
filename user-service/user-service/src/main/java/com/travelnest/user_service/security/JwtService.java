@@ -10,7 +10,7 @@ import java.util.Date;
 @Component
 public class JwtService {
 
-    // ⚠️ Must be SAME secret as in api-gateway JwtUtil!
+    //  Must be SAME secret as in api-gateway JwtUtil!
     private static final String SECRET =
             "TravelNestSecretKeyForJWTTokenGeneration2024";
 
@@ -21,7 +21,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
-    // 🎫 Create a JWT token for the logged in user
+    //  Create a JWT token for the logged in user
     public String generateToken(String email, String role) {
         return Jwts.builder()
                 .setSubject(email)                    // store email inside token

@@ -20,7 +20,7 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
-    // ✅ Validate token — returns true if valid, false if expired/invalid
+    //  Validate token — returns true if valid, false if expired/invalid
     public boolean isTokenValid(String token) {
         try {
             // Try to parse the token — if it fails, token is invalid
@@ -31,7 +31,7 @@ public class JwtUtil {
         }
     }
 
-    // 📦 Extract all data (claims) from token
+    //  Extract all data (claims) from token
     public Claims getClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())   // use same secret key
@@ -40,7 +40,7 @@ public class JwtUtil {
                 .getBody();                        // get the data inside
     }
 
-    // 👤 Extract username/email from token
+    //  Extract username/email from token
     public String extractUsername(String token) {
         return getClaims(token).getSubject();
     }

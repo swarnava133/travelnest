@@ -5,7 +5,7 @@
 const BASE_URL = "http://localhost:8080";
 
 // ─────────────────────────────────────────
-// 🔑 AUTH HELPER — get token from storage
+//  AUTH HELPER — get token from storage
 // ─────────────────────────────────────────
 function getToken() {
     return localStorage.getItem("token");
@@ -19,7 +19,7 @@ function getAuthHeaders() {
 }
 
 // ─────────────────────────────────────────
-// 👤 USER API
+//  USER API
 // ─────────────────────────────────────────
 const UserAPI = {
 
@@ -45,7 +45,7 @@ const UserAPI = {
 };
 
 // ─────────────────────────────────────────
-// 🏨 HOTEL API
+//  HOTEL API
 // ─────────────────────────────────────────
 const HotelAPI = {
 
@@ -84,7 +84,7 @@ const HotelAPI = {
 };
 
 // ─────────────────────────────────────────
-// 📅 BOOKING API
+//  BOOKING API
 // ─────────────────────────────────────────
 const BookingAPI = {
 

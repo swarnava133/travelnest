@@ -14,7 +14,7 @@ public class AuthController {
 
     private final UserService userService;
 
-    // 📝 REGISTER endpoint
+    //  REGISTER endpoint
     // POST http://localhost:8080/api/users/register
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
@@ -22,7 +22,7 @@ public class AuthController {
         return ResponseEntity.ok(message);
     }
 
-    // 🔐 LOGIN endpoint
+    //  LOGIN endpoint
     // POST http://localhost:8080/api/users/login
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
@@ -30,7 +30,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    // ✅ Health check — test if service is running
+    //  Health check — test if service is running
     // GET http://localhost:8080/api/users/health
     @GetMapping("/health")
     public ResponseEntity<String> health() {

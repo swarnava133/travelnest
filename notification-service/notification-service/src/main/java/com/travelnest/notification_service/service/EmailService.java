@@ -13,7 +13,7 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
-    // 📧 Send booking confirmation email
+    //  Send booking confirmation email
     public void sendBookingConfirmation(BookingEvent event) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
@@ -42,7 +42,7 @@ public class EmailService {
         }
     }
 
-    // 📝 Build email body text
+    //  Build email body text
     private String buildEmailBody(BookingEvent event) {
 
         if ("CONFIRMED".equals(event.getStatus())) {

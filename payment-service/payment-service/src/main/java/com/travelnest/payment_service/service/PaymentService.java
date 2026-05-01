@@ -18,7 +18,7 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
 
-    // 💳 Process a new payment
+    //  Process a new payment
     public PaymentResponse processPayment(PaymentRequest request) {
 
         // Create payment record
@@ -53,7 +53,7 @@ public class PaymentService {
         return mapToResponse(saved);
     }
 
-    // 🔍 Get payment by id
+    //  Get payment by id
     public PaymentResponse getPaymentById(Long id) {
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() ->
@@ -61,7 +61,7 @@ public class PaymentService {
         return mapToResponse(payment);
     }
 
-    // 🔍 Get all payments for a booking
+    //  Get all payments for a booking
     public List<PaymentResponse> getPaymentsByBooking(Long bookingId) {
         return paymentRepository.findByBookingId(bookingId)
                 .stream()
@@ -69,7 +69,7 @@ public class PaymentService {
                 .collect(Collectors.toList());
     }
 
-    // 🔍 Get all payments by user
+    //  Get all payments by user
     public List<PaymentResponse> getPaymentsByUser(String userEmail) {
         return paymentRepository.findByUserEmail(userEmail)
                 .stream()
@@ -77,7 +77,7 @@ public class PaymentService {
                 .collect(Collectors.toList());
     }
 
-    // 💰 Refund payment
+    //  Refund payment
     public PaymentResponse refundPayment(Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() ->
@@ -95,7 +95,7 @@ public class PaymentService {
         return mapToResponse(saved);
     }
 
-    // 🔄 Helper method — convert Payment entity to PaymentResponse DTO
+    //  Helper method — convert Payment entity to PaymentResponse DTO
     // "this::mapToResponse" in stream above calls this method
     private PaymentResponse mapToResponse(Payment payment) {
         return new PaymentResponse(

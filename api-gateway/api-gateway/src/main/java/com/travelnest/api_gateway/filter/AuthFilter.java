@@ -14,7 +14,7 @@ public class AuthFilter extends
     @Autowired
     private JwtUtil jwtUtil;
 
-    // ✅ These routes are PUBLIC — no JWT needed
+    //  These routes are PUBLIC — no JWT needed
     private static final List<String> OPEN_ROUTES = List.of(
             "/api/users/register",
             "/api/users/login",
@@ -30,7 +30,7 @@ public class AuthFilter extends
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
 
-            // ✅ Handle CORS preflight requests
+            // Handle CORS preflight requests
             if (exchange.getRequest().getMethod().toString().equals("OPTIONS")) {
                 exchange.getResponse().getHeaders()
                         .add("Access-Control-Allow-Origin", "*");
@@ -48,7 +48,7 @@ public class AuthFilter extends
 
             String path = exchange.getRequest().getURI().getPath();
 
-            // 1️⃣ Check if this route is public — skip JWT check
+            // 1️ Check if this route is public — skip JWT check
             boolean isOpenRoute = OPEN_ROUTES.stream()
                     .anyMatch(path::startsWith);
 
@@ -57,25 +57,25 @@ public class AuthFilter extends
                 return chain.filter(exchange);
             }
 
-            // 2️⃣ For protected routes — check Authorization header
+            // 2️ For protected routes — check Authorization header
             if (!exchange.getRequest().getHeaders()
                     .containsKey(HttpHeaders.AUTHORIZATION)) {
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                 return exchange.getResponse().setComplete();
             }
 
-            // 3️⃣ Extract token from header
+            // 3️ Extract token from header
             String authHeader = exchange.getRequest().getHeaders()
                     .get(HttpHeaders.AUTHORIZATION).get(0);
             String token = authHeader.substring(7); // remove "Bearer "
 
-            // 4️⃣ Validate token
+            // 4 Validate token
             if (!jwtUtil.isTokenValid(token)) {
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                 return exchange.getResponse().setComplete();
             }
 
-            // 5️⃣ Valid token → forward request
+            // 5️ Valid token → forward request
             return chain.filter(exchange);
         };
     }

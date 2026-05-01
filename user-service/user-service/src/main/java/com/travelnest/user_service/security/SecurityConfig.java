@@ -11,7 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // 🔓 Allow all requests to user-service
+    //  Allow all requests to user-service
     // (Gateway already handles JWT — no need to check again here)
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -23,7 +23,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // 🔐 BCrypt password encoder bean
+    //  BCrypt password encoder bean
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
