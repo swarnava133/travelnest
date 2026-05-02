@@ -6,8 +6,6 @@ spring:
     name: notification-service
   config:
     import: optional:configserver:http://localhost:8888
-
-  # Kafka Consumer config
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -19,13 +17,11 @@ spring:
         spring.json.trusted.packages: "*"
         spring.json.use.type.headers: false
         spring.json.value.default.type: com.travelnest.notification_service.dto.BookingEvent
-
-  # Email config (Gmail)
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ant155489@gmail.com
-    password: uujx cjfw qmdo agan
+    username: your_email@gmail.com
+    password: your_app_password
     properties:
       mail:
         smtp:
@@ -45,3 +41,39 @@ management:
     web:
       exposure:
         include: "*"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+    import: optional:configserver:http://config-server:8888
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: notification-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.travelnest.notification_service.dto.BookingEvent
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: your_email@gmail.com
+    password: your_app_password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://service-registry:8761/eureka/
+  instance:
+    prefer-ip-address: true
